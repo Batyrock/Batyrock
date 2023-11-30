@@ -1,5 +1,3 @@
-# ... (предыдущий код)
-
 from flask_login import UserMixin, LoginManager, login_user, login_required, current_user, logout_user
 from flask_uploads import UploadSet, configure_uploads, IMAGES
 from flask_mail import Mail, Message
@@ -17,23 +15,15 @@ mail = Mail(app)
 manager = Manager(app)
 
 class User(db.Model, UserMixin):
-    # ... (предыдущие поля)
 
 class Project(db.Model):
-    # ... (предыдущие поля)
     image = db.Column(db.String(20), nullable=False, default='default.jpg')
 
 class ContributionForm(FlaskForm):
     image = FileField('Add Image', validators=[FileAllowed(IMAGES, 'Images only!')])
-    # ... (другие поля)
-
-# Функции для реализации аутентификации
-
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
-
-# Роуты для аутентификации
 
 @app.route("/login", methods=['GET', 'POST'])
 def login():
@@ -48,8 +38,6 @@ def login():
         else:
             flash('Login unsuccessful. Please check email and password', 'danger')
     return render_template('login.html', form=form)
-
-# Роуты для обработки файлов
 
 @app.route("/project/<int:project_id>/contribute", methods=['GET', 'POST'])
 @login_required
@@ -67,8 +55,6 @@ def contribute(project_id):
         return redirect(url_for('project', project_id=project.id))
     return render_template('contribute.html', title='Contribute', form=form, project=project)
 
-# Функции для реализации уведомлений
-
 def send_reset_email(user):
     token = user.get_reset_token()
     msg = Message('Password Reset Request',
@@ -80,10 +66,6 @@ def send_reset_email(user):
 If you did not make this request then simply ignore this email and no changes will be made.
 '''
     mail.send(msg)
-
-# ... (другие функции и роуты)
-
-# Функции для реализации масштабируемости
 
 @manager.command
 def create_db():
